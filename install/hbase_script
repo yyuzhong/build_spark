@@ -1,0 +1,35 @@
+
+
+echo "********  start to install hbase package  ********"
+
+cd $installpath
+rm -rf $hbasepkg
+tar -xf $hbasepkg$pkgext
+
+echo "******** configure hbase xml and nodes ********"
+
+cat ./hbase-env-tmp.sh > hbase-env.sh
+cat ./hbase-site-tmp.xml > hbase-site.xml
+sed -i "s/hbasedir/${allnames[0]}:9000/g" ./hbase-site.xml
+echo "" > regionservers
+
+tmpnames=${allnames[0]}
+i=1
+len=${#allnodes[@]}
+while [ $i -lt $len ]
+do
+    nodename=${allnames[$i]}
+    echo $nodename >> ./regionservers
+    tmpnames=$tmpnames",$nodename"
+    let i++
+done
+
+sed -i "s/allnodes/$tmpnames/g" ./hbase-site.xml
+
+cp ./hbase-env.sh ./hbase-site.xml ./regionservers $installpath$hbasepkg/conf/
+
+
+rm ./hbase-env.sh
+rm ./hbase-site.xml
+rm ./regionservers
+

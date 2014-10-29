@@ -1,0 +1,53 @@
+
+
+echo "********  start to install hadoop package  ********"
+
+cd $installpath
+rm -rf $hadooppkg
+tar -xf $hadooppkg$pkgext
+
+cat ./env_hadoop.conf >> /etc/profile
+source /etc/profile
+
+echo "******** configure hdfs/mapreduce xml and master/slave ********"
+
+cat ./core-site-tmp.xml > core-site.xml
+sed -i 's:mytmpdir:/opt/cscloud/tmp:g' ./core-site.xml
+sed -i "s/myipaddr/$master:9000/g" ./core-site.xml
+
+cat ./hdfs-site-tmp.xml > hdfs-site.xml
+sed -i 's:mynamedir:/opt/cscloud/name1,/opt/cscloud/name2:g' ./hdfs-site.xml
+sed -i 's:mydatadir:/opt/cscloud/data1,/opt/cscloud/data2:g' ./hdfs-site.xml
+
+cat ./mapred-site-tmp.xml > mapred-site.xml
+sed -i "s/myipaddr/$master:9001/g" ./mapred-site.xml
+sed -i 's:mymapdir:/opt/cscloud/map:g' ./mapred-site.xml
+
+echo $master > ./masters
+echo $master > ./slaves
+
+i=1
+len=${#allnodes[@]}
+while [ $i -lt $len ]
+do
+    nodeip=${allnodes[$i]}
+    echo $nodeip >> ./slaves
+    let i++
+done
+
+
+if [ $myname == ${allnames[0]} ]; then
+    cp ./core-site.xml ./hdfs-site.xml ./mapred-site.xml ./masters ./slaves $installpath$hadooppkg/conf/
+else
+    cp ./core-site.xml ./hdfs-site.xml ./mapred-site.xml ./masters $installpath$hadooppkg/conf/
+fi
+
+echo "export JAVA_HOME=$installpath$javadir" >> $installpath$hadooppkg/conf/hadoop-env.sh
+
+rm ./core-site.xml
+rm ./hdfs-site.xml
+rm ./mapred-site.xml
+
+rm ./masters
+rm ./slaves
+

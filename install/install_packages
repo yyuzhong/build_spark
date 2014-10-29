@@ -1,0 +1,25 @@
+#!/bin/bash
+. ./nodes.conf
+
+i=0
+len=${#allnodes[@]}
+echo $len
+while [ $i -lt $len ]
+do
+    cat ./nodes.conf > ./install_script
+    myip=${allnodes[$i]}
+    echo $myip
+    echo "myip=$myip" >> ./install_script
+    echo "myname=${allnames[$i]}" >> ./install_script
+    cat ./hadoop_script >> ./install_script
+    #cat ./hbase_script >> ./install_script
+    chmod +x ./install_script
+    scp ./install_script root@$myip:/opt/cscloud/
+    echo "********  Run install script on $myip  ********"
+    ssh root@$myip 'sh -c "/opt/cscloud/install_script"'
+    let i++
+done
+
+rm ./install_script
+
+

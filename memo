@@ -1,0 +1,21 @@
+wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+
+yum install apache-maven
+
+
+
+yum erase jdk-1.6.0
+
+yum erase java-1.6.0-openjdk
+
+yum erase java-1.5.0-openjdk
+
+yum erase java-1.5.0
+
+yum erase jdk-1.6.0_31
+
+yum erase java-1.7.0-openjdk
+
+wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u5-b13/jdk-8u5-linux-x64.tar.gz
+
+./make-distribution.sh -Pyarn -Phadoop-2.5.1 -Dhadoop.version=2.5.1

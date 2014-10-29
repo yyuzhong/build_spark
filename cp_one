@@ -1,0 +1,14 @@
+#!/bin/bash
+. ./nodes.conf
+
+i=0
+len=${#allnodes[@]}
+echo $len
+while [ $i -lt $len ]
+do
+    myip=${allnodes[$i]}
+    echo $myip
+    scp $1  root@$myip:$2
+    echo "********  copy file to $myip  ********"
+    let i++
+done

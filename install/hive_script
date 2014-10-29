@@ -1,0 +1,26 @@
+
+
+echo "********  start to install hive package  ********"
+
+cd $installpath
+rm -rf $hivepkg
+tar -xf $hivepkg$pkgext
+
+cp $installpath$hbasepkg/$hbasejar $installpath$hivepkg/lib/
+cp $installpath$hbasepkg/lib/$zookeeperjar $installpath$hivepkg/lib/
+
+echo "******** configure hive xml and nodes ********"
+
+cat ./hive-env-tmp.sh > hive-env.sh
+cat ./hive-site-tmp.xml > hive-site.xml
+#sed -i "s/hivedir/${allnames[0]}:9000/g" ./hive-site.xml
+#Attention: the default database is derby embedded, to use in cluster, need to configure to C/S mode on dergy for mysql. T.B.D.
+cat ./hive-log4j-tmp.properties > hive-log4j.properties
+
+cp ./hive-env.sh ./hive-site.xml ./hive-log4j.properties $installpath$hivepkg/conf/
+
+
+rm ./hive-env.sh
+rm ./hive-site.xml
+rm ./hive-log4j.properties
+

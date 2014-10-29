@@ -1,0 +1,41 @@
+<configuration>
+    <property>
+    	<name>yarn.nodemanager.aux-services</name>
+    	<value>mapreduce_shuffle</value>
+    </property>
+    <property>
+    	<name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+    	<value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.scheduler.address</name>
+        <value>129.207.46.225:8030</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.address</name>
+        <value>129.207.46.225:8032</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.webapp.address</name>
+        <value>129.207.46.225:8088</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.resource-tracker.address</name>
+        <value>129.207.46.225:8031</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.admin.address</name>
+        <value>129.207.46.225:8033</value>
+    </property>
+    <property> 
+    	<name>yarn.nodemanager.log-dirs</name> 
+    	<value>/hadoop/110/yarn/logs</value>
+    </property>
+    <property>
+    	<name>yarn.log-aggregation-enable</name>
+     	<value>true</value>
+    </property> 
+
+</configuration>
+
+

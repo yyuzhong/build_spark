@@ -1,0 +1,40 @@
+#!/bin/bash
+. ./nodes.conf
+
+cp -f /etc/profile ./profile
+cat profile_append.conf >> ./profile
+
+cp -f hadoop_conf/* $hadoopdir/etc/hadoop/
+cp -f spark_conf/* $sparkdir/conf/
+
+i=0
+len=${#allnodes[@]}
+echo $len
+while [ $i -lt $len ]
+do
+    myip=${allnodes[$i]}
+    echo $myip
+    scp profile  root@$myip:/etc/
+    ssh root@$myip 'sh -c "mkdir /hadoop/110"'
+    echo "********  Copy profile to $myip  ********"
+    let i++
+done
+
+
+i=0
+len=${#allnodes[@]}
+echo $len
+while [ $i -lt $len ]
+do
+    myip=${allnodes[$i]}
+    echo $myip
+    scp  -r $javadir root@$myip:$installpath
+    echo "********  Copy jdk files to $myip  ********"
+    scp  -r $hadoopdir  root@$myip:$installpath
+    echo "********  Copy hadoop files to $myip  ********"
+    scp  -r $sparkdir  root@$myip:$installpath
+    echo "********  Copy hadoop files to $myip  ********"
+    ssh root@$myip 'sh -c "source /etc/profile"'
+    let i++
+done
+

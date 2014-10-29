@@ -1,0 +1,116 @@
+#!/bin/bash
+master=129.207.46.19
+slavenodes=(129.207.46.23)
+allnodes=(129.207.46.19 129.207.46.23)
+
+allnames=("hadoopmaster" "hadoopslave1")
+
+domain=.pvamucscloud.edu
+
+javapkg=jdk-7u25-linux-x64
+javadir=jdk1.7.0_25
+hadooppkg=hadoop-1.2.1
+
+pkgext=".tar.gz"
+
+installpath="/opt/cscloud/"
+
+myip=129.207.46.23
+myname=hadoopslave1
+
+
+echo "hadoop ALL=(ALL) ALL" >> /etc/sudoers
+
+su hadoop -c 'ssh-keygen -t rsa;cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys'
+
+su hadoop -c 'chmod -R 700 ~/.ssh'
+
+echo -e "NETWORKING=yes\nNETWORKING_IPV6=no\nHOSTNAME=${myname}" > /etc/sysconfig/network
+
+localdir0="127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4"
+localdir1="::1       localhost localhost.localdomain localhost6 localhost6.localdomain6"
+
+echo $localdir0 > /etc/hosts
+echo $localdir1 >> /etc/hosts
+
+i=0
+len=${#allnodes[@]}
+echo $len
+while [ $i -lt $len ]
+do
+    nodeip=${allnodes[$i]}
+    echo $nodeip
+    if [ $myip != $nodeip ]; then
+	cat /home/hadoop/.ssh/id_rsa.pub | ssh hadoop@$nodeip 'sh -c "cat - >>~/.ssh/authorized_keys"'
+    fi
+    nodename=${allnames[$i]}
+    echo "$nodeip $nodename$domain $nodename"  >> /etc/hosts 
+
+    let i++
+done
+
+
+#/etc/init.d/network restart
+
+
+chown -R hadoop:hadoop $installpath
+
+cd $installpath
+rm -rf $javadir
+tar -xvf $javapkg$pkgext
+
+cat ./env_java.conf >> /etc/profile
+source /etc/profile
+
+cd $installpath
+rm -rf $hadooppkg
+tar -xvf $hadooppkg$pkgext
+
+cat ./env_hadoop.conf >> /etc/profile
+source /etc/profile
+
+
+cp ./config_selinux /etc/selinux/config
+service iptables stop
+
+
+cat ./core-site-tmp.xml > core-site.xml
+sed -i 's:mytmpdir:/opt/cscloud/tmp:g' ./core-site.xml
+sed -i "s/myipaddr/$master:9000/g" ./core-site.xml
+
+cat ./hdfs-site-tmp.xml > hdfs-site.xml
+sed -i 's:mynamedir:/opt/cscloud/name1,/opt/cscloud/name2:g' ./hdfs-site.xml
+sed -i 's:mydatadir:/opt/cscloud/data1,/opt/cscloud/data2:g' ./hdfs-site.xml
+
+cat ./mapred-site-tmp.xml > mapred-site.xml
+sed -i "s/myipaddr/$master:9001/g" ./mapred-site.xml
+sed -i 's:mymapdir:/opt/cscloud/map:g' ./mapred-site.xml
+
+echo $master > ./masters
+echo $master > ./slaves
+
+i=0
+len=${#slavenodes[@]}
+while [ $i -lt $len ]
+do
+    nodeip=${slavenodes[$i]}
+    echo $nodeip >> ./slaves
+    let i++
+done
+
+
+if [ $myname == ${allnames[0]} ]; then
+    cp ./core-site.xml ./hdfs-site.xml ./mapred-site.xml ./masters ./slaves $installpath$hadooppkg/conf/
+else
+    cp ./core-site.xml ./hdfs-site.xml ./mapred-site.xml ./masters $installpath$hadooppkg/conf/
+fi
+
+echo "export JAVA_HOME=$installpath$javadir" >> $installpath$hadooppkg/conf/hadoop-env.sh
+
+rm ./core-site.xml
+rm ./hdfs-site.xml
+rm ./mapred-site.xml
+
+rm ./masters
+rm ./slaves
+
