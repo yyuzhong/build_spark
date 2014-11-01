@@ -18,4 +18,4 @@ yum erase java-1.7.0-openjdk
 
 wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u5-b13/jdk-8u5-linux-x64.tar.gz
 
-./make-distribution.sh -Pyarn -Phadoop-2.5.1 -Dhadoop.version=2.5.1
+./make-distribution.sh -Pyarn -Phadoop-2.5.1 -Dhadoop.version=2.5.1 -Pspark-ganglia-lgpl 
