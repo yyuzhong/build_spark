@@ -8,7 +8,7 @@ while [ $i -lt $len ]
 do
     myip=${allnodes[$i]}
     echo $myip
-    scp $1  root@$myip:$2
+    scp -r $1  root@$myip:$2
     echo "********  copy file to $myip  ********"
     let i++
 done

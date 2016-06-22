@@ -20,10 +20,10 @@
 # - SPARK_WORKER_INSTANCES, to set the number of worker processes per node
 # - SPARK_WORKER_DIR, to set the working directory of worker processes
 export JAVA_HOME=/opt/cscloud/jdk1.8.0_20/
-export SPARK_HOME=/opt/cscloud/spark-1.1.0/
+export SPARK_HOME=/opt/cscloud/spark-1.3.0/
 export SPARK_MATER_PORT=7077
 export SPARK_MASTER_IP=129.207.46.225
 export SPARK_WORKER_MEMORY=64g
-export SPARK_MASTER_WEBUI_PORT=7777
+export SPARK_MASTER_WEBUI_PORT=8000
 export SPARK_WORKER_CORES=16
-export SPARK_LIBRARY_PATH=/opt/cscloud/spark-1.1.0/lib/
+export SPARK_LIBRARY_PATH=/opt/cscloud/spark-1.3.0/lib/
